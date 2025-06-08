@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热熔机时间计算器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .logo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            flex: 0 0 150px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn-calculate {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-calculate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-calculate:active {
+            transform: translateY(1px);
+        }
+        
+        .results-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .results-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .result-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .result-card h3 {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+        
+        .result-card .value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .explanation {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            border-left: 4px solid #3498db;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        @media (max-width: 600px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .input-group label {
+                margin-bottom: 8px;
+            }
+            
+            .input-group input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">H</div>
+            <h1>热熔机时间计算器</h1>
+            <p>精确计算热熔过程各阶段所需时间</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="boardCount">芯板数量 (n):</label>
+                    <input type="number" id="boardCount" min="0" value="0">
+                </div>
+                
+                <button id="calculateBtn" class="btn-calculate">计算时间</button>
+            </div>
+            
+            <div class="results-section">
+                <h2>计算结果</h2>
+                <div class="result-grid">
+                    <div class="result-card">
+                        <h3>单层热熔时间</h3>
+                        <div id="layerTime" class="value">25秒</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>总热熔时间</h3>
+                        <div id="totalTime" class="value">0秒</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>预热时间</h3>
+                        <div id="preheatTime" class="value">20秒</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>固化时间</h3>
+                        <div id="cureTime" class="value">0秒</div>
+                        <small>(已扣除冷却时间)</small>
+                    </div>
+                    <div class="result-card">
+                        <h3>冷却时间</h3>
+                        <div id="coolingTime" class="value">20秒</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>总过程时间</h3>
+                        <div id="processTime" class="value">40秒</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explanation" id="explanation">
+                说明：芯板数量为0时，预热时间设为20秒（特殊处理）
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 热熔机时间计算器 | 离线网页应用</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM元素
+        const boardCountInput = document.getElementById('boardCount');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const layerTimeElement = document.getElementById('layerTime');
+        const totalTimeElement = document.getElementById('totalTime');
+        const preheatTimeElement = document.getElementById('preheatTime');
+        const cureTimeElement = document.getElementById('cureTime');
+        const coolingTimeElement = document.getElementById('coolingTime');
+        const processTimeElement = document.getElementById('processTime');
+        const explanationElement = document.getElementById('explanation');
+        
+        // 计算热熔时间函数
+        function calculateThermalTime(n) {
+            // 固定常量
+            const singleLayerTime = 25;  // 单层热熔时间（秒）
+            const coolingTime = 20;      // 冷却时间（秒）
+            
+            // 计算总时间
+            const totalTime = n * singleLayerTime;
+            
+            // 计算预热时间（n=0时特殊处理为20秒）
+            const preheatTime = n === 0 ? 20 : 0.2 * totalTime;
+            
+            // 计算原始固化时间
+            const rawCureTime = 0.8 * totalTime;
+            
+            // 计算显示固化时间
+            let displayCureTime = Math.max(0, rawCureTime - coolingTime);
+            
+            // n=0时固化时间设为0
+            if (n === 0) {
+                displayCureTime = 0;
+            }
+            
+            // 计算总过程时间
+            const totalProcessTime = preheatTime + totalTime + rawCureTime;
+            
+            return {
+                n,
+                singleLayerTime,
+                totalTime,
+                preheatTime,
+                displayCureTime,
+                coolingTime,
+                rawCureTime,
+                totalProcessTime
+            };
+        }
+        
+        // 格式化时间为分秒表示
+        function formatMinutesSeconds(seconds) {
+            if (seconds === 0) return "0秒";
+            
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            
+            if (minutes > 0 && remainingSeconds > 0) {
+                return `${minutes}分${remainingSeconds}秒`;
+            } else if (minutes > 0) {
+                return `${minutes}分`;
+            } else {
+                return `${remainingSeconds}秒`;
+            }
+        }
+        
+        // 更新UI显示结果
+        function updateResults(result) {
+            layerTimeElement.textContent = `${result.singleLayerTime}秒`;
+            totalTimeElement.textContent = `${result.totalTime}秒`;
+            preheatTimeElement.textContent = `${result.preheatTime}秒`;
+            cureTimeElement.textContent = `${result.displayCureTime}秒`;
+            coolingTimeElement.textContent = `${result.coolingTime}秒`;
+            processTimeElement.textContent = formatMinutesSeconds(result.totalProcessTime);
+            
+            // 更新说明
+            if (result.n === 0) {
+                explanationElement.textContent = "说明：芯板数量为0时，预热时间设为20秒（特殊处理）";
+            } else if (result.n === 1) {
+                explanationElement.textContent = "说明：单块芯板时，固化时间为0秒（20n-20=0）";
+            } else {
+                explanationElement.textContent = `说明：固化时间 = 总时间的80% - 冷却时间 = ${result.rawCureTime}秒 - ${result.coolingTime}秒 = ${result.displayCureTime}秒`;
+            }
+        }
+        
+        // 初始化页面
+        function init() {
+            // 初始计算一次
+            const initialResult = calculateThermalTime(0);
+            updateResults(initialResult);
+            
+            // 绑定计算按钮事件
+            calculateBtn.addEventListener('click', () => {
+                const n = parseInt(boardCountInput.value) || 0;
+                if (n < 0) {
+                    alert("错误：芯板数量不能为负数");
+                    return;
+                }
+                
+                const result = calculateThermalTime(n);
+                updateResults(result);
+            });
+            
+            // 输入框回车触发计算
+            boardCountInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    calculateBtn.click();
+                }
+            });
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
